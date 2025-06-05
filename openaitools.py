@@ -39,24 +39,7 @@ class OpenAiTools:
                 },
             }
         )
-        print()
+        
 
 
-openaitools = OpenAiTools()
 
-
-class Location(BaseModel):
-    city: str = Field(description="english city name")
-    country: str = Field(description="english country name")
-
-
-@openaitools
-def get_weather(location: Location):
-    return dict(temperature="9°C", humidity="20%")
-
-
-@openaitools
-def get_culture(location: Location):
-    return dict(type="funny")
-
-print(openaitools.tools)
