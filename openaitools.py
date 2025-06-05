@@ -30,7 +30,7 @@ class OpenAiTools:
             {
                 "type": "function",
                 "name": name,
-                "description": "Get current temperature for a given location.",
+                "description": f.__doc__,
                 "parameters": {
                     "type": "object",
                     "properties": properties,
