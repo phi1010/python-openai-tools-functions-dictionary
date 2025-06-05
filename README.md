@@ -11,12 +11,14 @@ class Location(BaseModel):
 
 @openaitools
 def get_weather(location: Location):
+    "Get current temperature for a given location."
     return dict(temperature="9°C", humidity="20%")
 
 
 @openaitools
 def get_culture(location: Location):
-    return dict(type="funny")
+    "Get current culture for a given location."
+    return dict(culture="funny")
 
 print(openaitools.tools)
 
