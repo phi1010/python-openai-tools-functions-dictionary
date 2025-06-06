@@ -32,3 +32,8 @@ client.responses.create(
 Can be used with https://platform.openai.com/docs/guides/function-calling?api-mode=responses&lang=python
 
 When you parsed the json arguments returned by OpenAI, you can do `openaitools.call_function('do_work',{"param1":["value1a"]})`
+
+
+## similar tools
+
+https://github.com/pydantic/pydantic-ai
