@@ -1,13 +1,37 @@
+
 import inspect
 from pydantic import BaseModel, Field
 
 class OpenAiTools:
     def __init__(self):
-        self.tools = []
+        self._tools = {}
+
+    @property
+    def tools(self):
+        return [descr for name,(f,descr) in self._tools.items()]
+
 
     def __call__(self, f):
         self.register_tool_callback(f)
         return f
+
+    def call_function(self, name, args:dict):
+        f,descr = self._tools[name]
+        signature = inspect.signature(f)
+        # print(signature)
+        kwargs = dict()
+        for pname, param in signature.parameters.items():
+            for pname, param in signature.parameters.items():
+                # print(name,param)
+                annotation = param.annotation
+                # print(annotation)
+                if not issubclass(annotation, BaseModel):
+                    raise Exception(
+                        "You must annotate parameters with classes derived from pydantic.BaseModel"
+                    )
+                pvalue = annotation.model_validate(args[pname])
+                kwargs[pname] = pvalue
+        return f(**kwargs)
 
     def register_tool_callback(self, f):
         name = f.__name__
@@ -26,11 +50,11 @@ class OpenAiTools:
             schema = annotation.model_json_schema()
             # print(schema)
             properties[pname] = schema
-        self.tools.append(
+        self._tools[name] = f, (
             {
                 "type": "function",
                 "name": name,
-                "description": "Get current temperature for a given location.",
+                "description": f.__doc__,
                 "parameters": {
                     "type": "object",
                     "properties": properties,
@@ -40,23 +64,3 @@ class OpenAiTools:
             }
         )
         print()
-
-
-openaitools = OpenAiTools()
-
-
-class Location(BaseModel):
-    city: str = Field(description="english city name")
-    country: str = Field(description="english country name")
-
-
-@openaitools
-def get_weather(location: Location):
-    return dict(temperature="9°C", humidity="20%")
-
-
-@openaitools
-def get_culture(location: Location):
-    return dict(type="funny")
-
-print(openaitools.tools)
